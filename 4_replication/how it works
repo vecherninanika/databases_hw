@@ -1,0 +1,15 @@
+cd Master/
+docker compose up --build
+
+cd Replica/
+docker compose up --build
+
+Go to http://127.0.0.1:5000/replica
+
+In dBeaver connect to POSTGRES_DB=sirius MASTER_PORT=38747 MASTER_USER=master_user MASTER_PASSWORD=my_password
+and to POSTGRES_DB=sirius REPL_PORT=38749 MASTER_USER=master_user MASTER_PASSWORD=my_password
+
+try to insert in Master, restart docker in Replica and select in replica. It should be updated
+
+
+Also in Terminal docker stop master-postgres-1, replica mustn't stop working after we stop Master.

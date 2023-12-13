@@ -1,0 +1,265 @@
+[
+    {
+        "database": "postgres",
+        "index": "topic",
+        "settings": {
+            "analysis": {
+                "filter": {
+                    "my_ngram_filter": {
+                        "type": "edge_ngram",
+                        "min_gram": 1,
+                        "max_gram": 5
+                    }
+                },
+                "analyzer": {
+                    "my_ngram_analyzer": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": [
+                            "lowercase",
+                            "my_ngram_filter"
+                        ]
+                    }
+                }
+            }
+        },
+        "mappings": {
+            "properties": {
+                "topic": {
+                    "type": "text",
+                    "analyzer": "my_ngram_analyzer"
+                }
+            }
+        },    
+        "nodes": {
+            "table": "topic",
+            "schema": "public",
+            "columns": [],
+            "transform": {
+                "mapping": {
+                    "id": {
+                        "type": "keyword"
+                    },
+                    "topic": {
+                        "type": "text"
+                    },
+                    "studentsbook": {
+                        "type": "keyword"
+                    },
+                    "page": {
+                        "type": "integer"
+                    },
+                    "website": {
+                        "type": "keyword"
+                    }
+                }
+            },
+            "children": [
+                {
+                    "table": "task",
+                    "schema": "public",
+                    "columns": [],
+                    "transform": {
+                        "mapping": {
+                            "id": {
+                                "type": "keyword"
+                            },
+                            "task": {
+                                "type": "text"
+                            },
+                            "difficulty": {
+                                "type": "keyword"
+                            },
+                            "answer": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "relationship": {
+                        "variant": "object",
+                        "type": "one_to_many"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "database": "postgres",
+        "index": "task",
+        "mappings": {
+            "properties": {
+                "task": {
+                    "type": "text"
+                }
+            }
+        },
+        "nodes": {
+            "table": "task",
+            "schema": "public",
+            "columns": [],
+            "transform": {
+                "mapping": {
+                    "id": {
+                        "type": "keyword"
+                    },
+                    "task": {
+                        "type": "text"
+                    },
+                    "difficulty": {
+                        "type": "keyword"
+                    },
+                    "answer": {
+                        "type": "keyword"
+                    }
+                }
+            },
+            "children": [
+                {
+                    "table": "topic",
+                    "schema": "public",
+                    "columns": [],
+                    "transform": {
+                        "mapping": {
+                            "id": {
+                                "type": "keyword"
+                            },
+                            "topic": {
+                                "type": "text"
+                            },
+                            "studentsbook": {
+                                "type": "keyword"
+                            },
+                            "page": {
+                                "type": "integer"
+                            },
+                            "website": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "relationship": {
+                        "variant": "object",
+                        "type": "one_to_one"
+                    }
+                },
+                {
+                    "table": "person",
+                    "schema": "public",
+                    "transform": {
+                        "mapping": {
+                            "id": {
+                                "type": "keyword"
+                            },
+                            "name": {
+                                "type": "keyword"
+                            },
+                            "personal_info": {
+                                "type": "text"
+                            },
+                            "date_of_birth": {
+                                "type": "date"
+                            },
+                            "grade": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "relationship": {
+                        "variant": "object",
+                        "type": "one_to_many",
+                        "through_tables": ["person_to_task"]
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "database": "postgres",
+        "index": "person",
+        "settings": {
+            "analysis": {
+                "filter": {
+                    "russian_stop": {
+                        "type": "stop",
+                        "stopwords": "_russian_"
+                    },
+                    "russian_stemmer": {
+                        "type": "stemmer",
+                        "language": "russian"
+                    },
+                    "my_synonym": {
+                        "type": "synonym",
+                        "synonyms": [
+                            "различный => разный",
+                            "инфа => информация"
+                        ]
+                    }
+                },
+                "analyzer": {
+                    "my_ru_analyzer": {
+                        "tokenizer": "standard",
+                        "filter": ["lowercase", "russian_stop", "russian_stemmer", "my_synonym"]
+                    }
+                }
+            }
+        },
+        "mappings": {
+            "properties": {
+                "personal_info": {
+                    "type": "text",
+                    "analyzer": "my_ru_analyzer"
+                }
+            }
+        },    
+        "nodes": {
+            "table": "person",
+            "schema": "public",
+            "transform": {
+                "mapping": {
+                    "id": {
+                        "type": "keyword"
+                    },
+                    "name": {
+                        "type": "keyword"
+                    },
+                    "personal_info": {
+                        "type": "text"
+                    },
+                    "date_of_birth": {
+                        "type": "date"
+                    },
+                    "grade": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "children": [
+                {
+                    "table": "task",
+                    "schema": "public",
+                    "transform": {
+                        "mapping": {
+                            "id": {
+                                "type": "keyword"
+                            },
+                            "task": {
+                                "type": "keyword"
+                            },
+                            "difficulty": {
+                                "type": "keyword"
+                            },
+                            "answer": {
+                                "type": "keyword"
+                            }
+                        }
+                    },
+                    "relationship": {
+                        "variant": "object",
+                        "type": "one_to_many",
+                        "through_tables": ["person_to_task"]
+                    }
+                }
+            ]
+        }
+    }
+]
